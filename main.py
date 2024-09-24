@@ -105,7 +105,7 @@ def main():
             st.write(f"No Visa Found , {div_count} Div Found at {current_time}")
 
             if div_count is not None:
-                if div_count != 110:
+                if div_count != 11:
                     message = f"The number of visa categories have been changed."
                     send_email(message, sender_email, receiver_emails, password)
                     st.success(f"Email Send Successfully to {receiver_emails}")
