@@ -74,7 +74,7 @@ def main():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
     }
 
-    scraperapi_key = st.sidebar.text_input("SCRAPER API" ,value=scraperapi_key)
+    # scraperapi_key = st.sidebar.text_input("SCRAPER API")
     col1 , col2    = st.sidebar.columns([1,1])
     with col1:
         start_button = st.button("START")
