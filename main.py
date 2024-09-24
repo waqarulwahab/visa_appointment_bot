@@ -16,7 +16,7 @@ st.title("Germany Visa Appointment BOT")
 # Load secrets
 sender_email    = st.secrets["email"]["sender_email"]
 password        = st.secrets["email"]["password"]
-receiver_emails = st.secrets["receiver"]["receiver_email"].split(",")
+receiver_emails = st.secrets["receiver"]["receiver_emails"]
 scraperapi_key  = st.secrets["scraper"]["api_key"]
 
 # Function to check the div count
@@ -44,11 +44,13 @@ def check_div_count(url, headers):
         return None
 
 # Function to send email
-def send_email(message):
-    if not sender_email or not receiver_email or not password:
+def send_email(message, sender_email, receiver_emails, password):
+    # Check if the essential credentials are set
+    if not sender_email or not receiver_emails or not password:
         logging.error("Email credentials not set.")
         return
 
+    # Loop through each receiver email
     for receiver_email in receiver_emails:
         msg = MIMEMultipart()
         msg['From'] = sender_email
@@ -62,10 +64,9 @@ def send_email(message):
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, msg.as_string())
             server.quit()
-            st.sidebar.success(f"Email sent successfully to {receiver_email}.")
+            st.sidebar.info(f"Email sent successfully to {receiver_email}.")
             logging.info(f"Email sent successfully to {receiver_email}.")
         except Exception as e:
-            st.sidebar.error("App Stopped")
             logging.error(f"Failed to send email to {receiver_email}. Error: {e}")
 
 def main():
@@ -76,7 +77,10 @@ def main():
 
     # scraperapi_key = st.sidebar.text_input("SCRAPER API")
 
-    max_iterations = st.sidebar.number_input("Enter Maximum No. Of Iterations..", step=5, value=5)
+    max_iterations         = st.sidebar.number_input("Enter Maximum No. Of Iterations..", step=5, value=50)
+    waiting_time_in_mins   = st.sidebar.number_input("Waiting Time In Mins..", value=6)
+
+    waiting_time_in_sec = waiting_time_in_mins * 60
 
     col1 , col2    = st.sidebar.columns([1,1])
     with col1:
@@ -98,18 +102,18 @@ def main():
             st.session_state['iteration_count'] += 1
             div_count = check_div_count(url, headers)
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            st.write(f"Total {div_count} Div Found at {current_time}")
+            st.write(f"No Visa Found , {div_count} Div Found at {current_time}")
 
             if div_count is not None:
-                if div_count != 11:
+                if div_count != 110:
                     message = f"The number of visa categories have been changed."
-                    send_email(message)
+                    send_email(message, sender_email, receiver_emails, password)
                     st.success(f"Email Send Successfully to {receiver_emails}")
                 else:
                     logging.info(f"No change in div count. Current count: {div_count}")
             else:
                 logging.error("Could not retrieve the div count.")
-            time.sleep(200)
+            time.sleep(waiting_time_in_sec)
 
         st.sidebar.info("Reached maximum iterations. Stopping the loop.")
 
