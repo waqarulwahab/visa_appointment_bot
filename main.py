@@ -81,18 +81,20 @@ def main():
     with col2:
         stop_button  = st.button("STOP")
 
-    iteration_count = 0
+
+    max_iterations = st.number_input("Enter Maximum No. Of Iteration..", step=5)  # Or any suitable number
     st.sidebar.info(f"Iteration Count: {st.session_state['iteration_count']}")
-    if start_button:
+    if start_button and max_iterations:
         st.title("LOGS")
 
 
         if 'iteration_count' not in st.session_state:
             st.session_state['iteration_count'] = 0
 
-        while True:
+
+        while st.session_state['iteration_count'] < max_iterations:
             st.session_state['iteration_count'] += 1
-            div_count    = check_div_count(scraperapi_key, url, headers)
+            div_count = check_div_count(scraperapi_key, url, headers)
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             st.write(f"Total {div_count} Div Found at {current_time}")
 
@@ -106,6 +108,8 @@ def main():
             else:
                 logging.error("Could not retrieve the div count.")
             time.sleep(200)
+
+        st.sidebar.info("Reached maximum iterations. Stopping the loop.")
     elif stop_button:
         st.session_state.clear()  # This will clear all session variables
         st.sidebar.success("Application is stopped")
