@@ -75,16 +75,15 @@ def main():
     }
 
     # scraperapi_key = st.sidebar.text_input("SCRAPER API")
+
+    max_iterations = st.sidebar.number_input("Enter Maximum No. Of Iterations..", step=5, value=5)
+
     col1 , col2    = st.sidebar.columns([1,1])
     with col1:
         start_button = st.button("START")
     with col2:
         stop_button  = st.button("STOP")
 
-
-
-
-    max_iterations = st.number_input("Enter Maximum No. Of Iterations..", step=5, value=5)
 
     if 'iteration_count' not in st.session_state:
         st.session_state['iteration_count'] = 0
@@ -95,7 +94,7 @@ def main():
         st.title("LOGS")
 
         while st.session_state['iteration_count'] < max_iterations:
-            
+
             st.session_state['iteration_count'] += 1
             div_count = check_div_count(url, headers)
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
