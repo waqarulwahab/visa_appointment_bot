@@ -20,7 +20,7 @@ receiver_emails = st.secrets["receiver"]["receiver_email"].split(",")
 scraperapi_key  = st.secrets["scraper"]["api_key"]
 
 # Function to check the div count
-def check_div_count(scraperapi_key, url, headers):
+def check_div_count(url, headers):
     try:
         # st.write("TRY EXECUTE")
         client = ZenRowsClient("407ac46574b7d648d46d6fe1d2f030cdcba7105e")
@@ -82,19 +82,22 @@ def main():
         stop_button  = st.button("STOP")
 
 
-    max_iterations = st.number_input("Enter Maximum No. Of Iteration..", step=5)  # Or any suitable number
+
+
+    max_iterations = st.number_input("Enter Maximum No. Of Iterations..", step=5, value=5)
+
+    if 'iteration_count' not in st.session_state:
+        st.session_state['iteration_count'] = 0
+
     st.sidebar.info(f"Iteration Count: {st.session_state['iteration_count']}")
+    
     if start_button and max_iterations:
         st.title("LOGS")
 
-
-        if 'iteration_count' not in st.session_state:
-            st.session_state['iteration_count'] = 0
-
-
         while st.session_state['iteration_count'] < max_iterations:
+            
             st.session_state['iteration_count'] += 1
-            div_count = check_div_count(scraperapi_key, url, headers)
+            div_count = check_div_count(url, headers)
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             st.write(f"Total {div_count} Div Found at {current_time}")
 
@@ -110,6 +113,9 @@ def main():
             time.sleep(200)
 
         st.sidebar.info("Reached maximum iterations. Stopping the loop.")
+
+
+
     elif stop_button:
         st.session_state.clear()  # This will clear all session variables
         st.sidebar.success("Application is stopped")
